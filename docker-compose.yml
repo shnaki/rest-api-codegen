@@ -1,0 +1,18 @@
+services:
+  dev-postgres:
+    image: postgres:18.1-alpine
+    ports:
+      - 5436:5432
+    environment:
+      POSTGRES_USER: codegen
+      POSTGRES_PASSWORD: codegen
+      POSTGRES_DB: codegen
+    restart: always
+    volumes:
+      - codegen:/var/lib/postgresql
+    networks:
+      - codegen
+volumes:
+  codegen:
+networks:
+  codegen:
