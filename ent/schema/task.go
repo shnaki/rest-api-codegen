@@ -4,7 +4,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"entgo.io/ent/schema/mixin"
 )
 
 // Task holds the schema definition for the Task entity.
@@ -31,6 +30,6 @@ func (Task) Edges() []ent.Edge {
 // Mixin は再利用可能なスキーマを注入する。
 func (Task) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.Time{},
+		TimeMixin{},
 	}
 }

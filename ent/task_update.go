@@ -29,9 +29,9 @@ func (_u *TaskUpdate) Where(ps ...predicate.Task) *TaskUpdate {
 	return _u
 }
 
-// SetUpdateTime sets the "update_time" field.
-func (_u *TaskUpdate) SetUpdateTime(v time.Time) *TaskUpdate {
-	_u.mutation.SetUpdateTime(v)
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *TaskUpdate) SetUpdatedAt(v time.Time) *TaskUpdate {
+	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -109,9 +109,9 @@ func (_u *TaskUpdate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_u *TaskUpdate) defaults() {
-	if _, ok := _u.mutation.UpdateTime(); !ok {
-		v := task.UpdateDefaultUpdateTime()
-		_u.mutation.SetUpdateTime(v)
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		v := task.UpdateDefaultUpdatedAt()
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -124,8 +124,8 @@ func (_u *TaskUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.UpdateTime(); ok {
-		_spec.SetField(task.FieldUpdateTime, field.TypeTime, value)
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(task.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(task.FieldTitle, field.TypeString, value)
@@ -179,9 +179,9 @@ type TaskUpdateOne struct {
 	mutation *TaskMutation
 }
 
-// SetUpdateTime sets the "update_time" field.
-func (_u *TaskUpdateOne) SetUpdateTime(v time.Time) *TaskUpdateOne {
-	_u.mutation.SetUpdateTime(v)
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *TaskUpdateOne) SetUpdatedAt(v time.Time) *TaskUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -272,9 +272,9 @@ func (_u *TaskUpdateOne) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_u *TaskUpdateOne) defaults() {
-	if _, ok := _u.mutation.UpdateTime(); !ok {
-		v := task.UpdateDefaultUpdateTime()
-		_u.mutation.SetUpdateTime(v)
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		v := task.UpdateDefaultUpdatedAt()
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -304,8 +304,8 @@ func (_u *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.UpdateTime(); ok {
-		_spec.SetField(task.FieldUpdateTime, field.TypeTime, value)
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(task.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Title(); ok {
 		_spec.SetField(task.FieldTitle, field.TypeString, value)
