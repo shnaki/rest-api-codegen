@@ -1,6 +1,9 @@
 generate-ent:
 	go generate ./ent
 
+generate-oapi:
+	go generate ./api
+
 tidy:
 	go mod tidy
 
