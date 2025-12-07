@@ -1,0 +1,429 @@
+openapi: 3.0.1
+info:
+  title: Echo Todo API
+  description: TodoアプリのためのAPIです。
+  version: '1.0'
+  contact: {}
+tags:
+  - name: user
+  - name: task
+paths:
+  /signup:
+    post:
+      summary: ユーザ登録
+      deprecated: false
+      description: ユーザ登録を実施する。
+      operationId: signUp
+      tags:
+        - user
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+            example:
+              email: user1@test.com
+              password: test123
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              example:
+                id: 1
+                email: user1@test.com
+                password: xxxxxxxxxxx
+          headers: {}
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+          headers: {}
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+              example: 'password: password is required.'
+          headers: {}
+      security: []
+      x-s2o-warning: Operation post:/signup has multiple requestBodies
+  /login:
+    post:
+      summary: ログイン
+      deprecated: false
+      description: ユーザのログインを実施する。
+      operationId: login
+      tags:
+        - user
+      parameters:
+        - name: X-CSRF-TOKEN
+          in: header
+          description: CSRFトークン。
+          required: false
+          example: ''
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+            example:
+              email: user1@test.com
+              password: test123
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+          headers: {}
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+              example: >-
+                crypto/bcrypt: hashedPassword is not the hash of the given
+                password
+          headers: {}
+      security: []
+  /logout:
+    post:
+      summary: ログアウト
+      deprecated: false
+      description: ユーザをログアウトする。
+      operationId: logout
+      tags:
+        - user
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  /csrf:
+    get:
+      summary: CSRFトークンの発行
+      deprecated: false
+      description: CSRFトークンを生成する。
+      operationId: csrf
+      tags:
+        - user
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  csrf_token:
+                    type: string
+                    description: CSRFトークン。
+                required:
+                  - csrf_token
+              example:
+                csrf_token: xFIQfdIBFBgYKsBJfNuWVUQYAiINjqEl
+          headers: {}
+      security: []
+  /tasks:
+    get:
+      summary: タスク一覧の取得
+      deprecated: false
+      description: タスクの一覧を取得する。
+      operationId: getAllTasks
+      tags:
+        - task
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+              example:
+                - id: 1
+                  title: task1
+                  created_at: '2025-12-07T19:19:45.035101+09:00'
+                  updated_at: '2025-12-07T19:19:45.035101+09:00'
+                - id: 2
+                  title: task2
+                  created_at: '2025-12-07T19:19:47.873194+09:00'
+                  updated_at: '2025-12-07T19:19:47.873194+09:00'
+          headers: {}
+        '401':
+          $ref: '#/components/responses/JWTトークンエラー'
+          description: JWT認証のエラー。
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+          headers: {}
+      security: []
+    post:
+      summary: タスクの新規作成
+      deprecated: false
+      description: タスクを新規作成する。
+      operationId: createTask
+      tags:
+        - task
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+            example:
+              title: Task1
+        required: true
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+              example:
+                id: 3
+                title: Task3
+                created_at: '2025-12-07T22:05:54.5048491+09:00'
+                updated_at: '2025-12-07T22:05:54.5048491+09:00'
+          headers: {}
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+        '401':
+          $ref: '#/components/responses/JWTトークンエラー'
+          description: JWT認証のエラー。
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+      security: []
+  /tasks/{taskId}:
+    get:
+      summary: タスクの取得
+      deprecated: false
+      description: 指定されたIDのタスクを返す。
+      operationId: getTaskById
+      tags:
+        - task
+      parameters:
+        - name: taskId
+          in: path
+          description: タスクのID。
+          required: true
+          example: 2
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+              example:
+                id: 2
+                title: task2
+                created_at: '2025-12-07T19:19:47.873194+09:00'
+                updated_at: '2025-12-07T19:19:47.873194+09:00'
+          headers: {}
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+              example: record not found
+          headers: {}
+      security: []
+    put:
+      summary: タスクの更新
+      deprecated: false
+      description: 指定されたIDのタスクを更新する。
+      operationId: updateTask
+      tags:
+        - task
+      parameters:
+        - name: taskId
+          in: path
+          description: タスクのID。
+          required: true
+          example: 1
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+            examples:
+              '1':
+                value:
+                  title: UpdatedTask1
+                summary: 文字数超過
+              '2':
+                value:
+                  title: Updated1
+                summary: 成功
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+          headers: {}
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+              example: 'title: limited max 10 char.'
+          headers: {}
+      security: []
+    delete:
+      summary: タスクの削除
+      deprecated: false
+      description: 指定されたIDのタスクを削除する。
+      operationId: deleteTask
+      tags:
+        - task
+      parameters:
+        - name: taskId
+          in: path
+          description: タスクのID。
+          required: true
+          example: 1
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: ''
+          headers: {}
+        '401':
+          $ref: '#/components/responses/JWTトークンエラー'
+          description: JWT認証のエラー。
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+              example: object does not exist
+          headers: {}
+      security: []
+components:
+  schemas:
+    UserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          description: ユーザーのメールアドレス。
+        password:
+          type: string
+          description: ユーザーの平文のパスワード。
+      description: ユーザーアカウント情報。
+      required:
+        - email
+        - password
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          description: ユーザーの固有識別子。
+        email:
+          type: string
+          description: ユーザーのメールアドレス。
+      description: ユーザーアカウント情報。
+      required:
+        - id
+        - email
+    TaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: タスクのタイトル。
+      required:
+        - title
+    TaskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: タスクのID。
+          format: uint64
+        title:
+          type: string
+          description: タスクのタイトル。
+        created_at:
+          type: string
+          description: タスクの登録日時。
+        updated_at:
+          type: string
+          description: タスクの更新日時。
+      required:
+        - id
+        - title
+        - created_at
+        - updated_at
+    ApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: ユーザ向けのメッセージ。
+      required:
+        - message
+  responses:
+    JWTトークンエラー:
+      description: JWT認証のエラー。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          examples:
+            JWTトークンエラー:
+              summary: JWTトークンエラー
+              value:
+                message: missing or malformed jwt
+  securitySchemes: {}
+servers: []
+security: []
