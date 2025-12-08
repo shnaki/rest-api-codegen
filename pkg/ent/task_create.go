@@ -56,13 +56,13 @@ func (_c *TaskCreate) SetTitle(v string) *TaskCreate {
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (_c *TaskCreate) SetOwnerID(id int) *TaskCreate {
+func (_c *TaskCreate) SetOwnerID(id uint64) *TaskCreate {
 	_c.mutation.SetOwnerID(id)
 	return _c
 }
 
 // SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
-func (_c *TaskCreate) SetNillableOwnerID(id *int) *TaskCreate {
+func (_c *TaskCreate) SetNillableOwnerID(id *uint64) *TaskCreate {
 	if id != nil {
 		_c = _c.SetOwnerID(*id)
 	}
@@ -145,7 +145,7 @@ func (_c *TaskCreate) sqlSave(ctx context.Context) (*Task, error) {
 		return nil, err
 	}
 	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	_node.ID = uint64(id)
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
 	return _node, nil
@@ -154,7 +154,7 @@ func (_c *TaskCreate) sqlSave(ctx context.Context) (*Task, error) {
 func (_c *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Task{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(task.Table, sqlgraph.NewFieldSpec(task.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(task.Table, sqlgraph.NewFieldSpec(task.FieldID, field.TypeUint64))
 	)
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(task.FieldCreatedAt, field.TypeTime, value)
@@ -176,7 +176,7 @@ func (_c *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 			Columns: []string{task.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -235,7 +235,7 @@ func (_c *TaskCreateBulk) Save(ctx context.Context) ([]*Task, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = uint64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

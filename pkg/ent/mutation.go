@@ -34,12 +34,12 @@ type TaskMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uint64
 	created_at    *time.Time
 	updated_at    *time.Time
 	title         *string
 	clearedFields map[string]struct{}
-	owner         *int
+	owner         *uint64
 	clearedowner  bool
 	done          bool
 	oldValue      func(context.Context) (*Task, error)
@@ -66,7 +66,7 @@ func newTaskMutation(c config, op Op, opts ...taskOption) *TaskMutation {
 }
 
 // withTaskID sets the ID field of the mutation.
-func withTaskID(id int) taskOption {
+func withTaskID(id uint64) taskOption {
 	return func(m *TaskMutation) {
 		var (
 			err   error
@@ -118,7 +118,7 @@ func (m TaskMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *TaskMutation) ID() (id int, exists bool) {
+func (m *TaskMutation) ID() (id uint64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -129,12 +129,12 @@ func (m *TaskMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *TaskMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *TaskMutation) IDs(ctx context.Context) ([]uint64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uint64{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -253,7 +253,7 @@ func (m *TaskMutation) ResetTitle() {
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by id.
-func (m *TaskMutation) SetOwnerID(id int) {
+func (m *TaskMutation) SetOwnerID(id uint64) {
 	m.owner = &id
 }
 
@@ -268,7 +268,7 @@ func (m *TaskMutation) OwnerCleared() bool {
 }
 
 // OwnerID returns the "owner" edge ID in the mutation.
-func (m *TaskMutation) OwnerID() (id int, exists bool) {
+func (m *TaskMutation) OwnerID() (id uint64, exists bool) {
 	if m.owner != nil {
 		return *m.owner, true
 	}
@@ -278,7 +278,7 @@ func (m *TaskMutation) OwnerID() (id int, exists bool) {
 // OwnerIDs returns the "owner" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // OwnerID instead. It exists only for internal usage by the builders.
-func (m *TaskMutation) OwnerIDs() (ids []int) {
+func (m *TaskMutation) OwnerIDs() (ids []uint64) {
 	if id := m.owner; id != nil {
 		ids = append(ids, *id)
 	}
@@ -535,14 +535,14 @@ type UserMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uint64
 	created_at    *time.Time
 	updated_at    *time.Time
 	email         *string
 	password      *string
 	clearedFields map[string]struct{}
-	tasks         map[int]struct{}
-	removedtasks  map[int]struct{}
+	tasks         map[uint64]struct{}
+	removedtasks  map[uint64]struct{}
 	clearedtasks  bool
 	done          bool
 	oldValue      func(context.Context) (*User, error)
@@ -569,7 +569,7 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 }
 
 // withUserID sets the ID field of the mutation.
-func withUserID(id int) userOption {
+func withUserID(id uint64) userOption {
 	return func(m *UserMutation) {
 		var (
 			err   error
@@ -621,7 +621,7 @@ func (m UserMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id int, exists bool) {
+func (m *UserMutation) ID() (id uint64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -632,12 +632,12 @@ func (m *UserMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *UserMutation) IDs(ctx context.Context) ([]uint64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uint64{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -792,9 +792,9 @@ func (m *UserMutation) ResetPassword() {
 }
 
 // AddTaskIDs adds the "tasks" edge to the Task entity by ids.
-func (m *UserMutation) AddTaskIDs(ids ...int) {
+func (m *UserMutation) AddTaskIDs(ids ...uint64) {
 	if m.tasks == nil {
-		m.tasks = make(map[int]struct{})
+		m.tasks = make(map[uint64]struct{})
 	}
 	for i := range ids {
 		m.tasks[ids[i]] = struct{}{}
@@ -812,9 +812,9 @@ func (m *UserMutation) TasksCleared() bool {
 }
 
 // RemoveTaskIDs removes the "tasks" edge to the Task entity by IDs.
-func (m *UserMutation) RemoveTaskIDs(ids ...int) {
+func (m *UserMutation) RemoveTaskIDs(ids ...uint64) {
 	if m.removedtasks == nil {
-		m.removedtasks = make(map[int]struct{})
+		m.removedtasks = make(map[uint64]struct{})
 	}
 	for i := range ids {
 		delete(m.tasks, ids[i])
@@ -823,7 +823,7 @@ func (m *UserMutation) RemoveTaskIDs(ids ...int) {
 }
 
 // RemovedTasks returns the removed IDs of the "tasks" edge to the Task entity.
-func (m *UserMutation) RemovedTasksIDs() (ids []int) {
+func (m *UserMutation) RemovedTasksIDs() (ids []uint64) {
 	for id := range m.removedtasks {
 		ids = append(ids, id)
 	}
@@ -831,7 +831,7 @@ func (m *UserMutation) RemovedTasksIDs() (ids []int) {
 }
 
 // TasksIDs returns the "tasks" edge IDs in the mutation.
-func (m *UserMutation) TasksIDs() (ids []int) {
+func (m *UserMutation) TasksIDs() (ids []uint64) {
 	for id := range m.tasks {
 		ids = append(ids, id)
 	}

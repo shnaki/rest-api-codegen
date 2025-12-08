@@ -50,13 +50,13 @@ func (_u *TaskUpdate) SetNillableTitle(v *string) *TaskUpdate {
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (_u *TaskUpdate) SetOwnerID(id int) *TaskUpdate {
+func (_u *TaskUpdate) SetOwnerID(id uint64) *TaskUpdate {
 	_u.mutation.SetOwnerID(id)
 	return _u
 }
 
 // SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
-func (_u *TaskUpdate) SetNillableOwnerID(id *int) *TaskUpdate {
+func (_u *TaskUpdate) SetNillableOwnerID(id *uint64) *TaskUpdate {
 	if id != nil {
 		_u = _u.SetOwnerID(*id)
 	}
@@ -116,7 +116,7 @@ func (_u *TaskUpdate) defaults() {
 }
 
 func (_u *TaskUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(task.Table, task.Columns, sqlgraph.NewFieldSpec(task.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(task.Table, task.Columns, sqlgraph.NewFieldSpec(task.FieldID, field.TypeUint64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -138,7 +138,7 @@ func (_u *TaskUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{task.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -151,7 +151,7 @@ func (_u *TaskUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{task.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -200,13 +200,13 @@ func (_u *TaskUpdateOne) SetNillableTitle(v *string) *TaskUpdateOne {
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (_u *TaskUpdateOne) SetOwnerID(id int) *TaskUpdateOne {
+func (_u *TaskUpdateOne) SetOwnerID(id uint64) *TaskUpdateOne {
 	_u.mutation.SetOwnerID(id)
 	return _u
 }
 
 // SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
-func (_u *TaskUpdateOne) SetNillableOwnerID(id *int) *TaskUpdateOne {
+func (_u *TaskUpdateOne) SetNillableOwnerID(id *uint64) *TaskUpdateOne {
 	if id != nil {
 		_u = _u.SetOwnerID(*id)
 	}
@@ -279,7 +279,7 @@ func (_u *TaskUpdateOne) defaults() {
 }
 
 func (_u *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) {
-	_spec := sqlgraph.NewUpdateSpec(task.Table, task.Columns, sqlgraph.NewFieldSpec(task.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(task.Table, task.Columns, sqlgraph.NewFieldSpec(task.FieldID, field.TypeUint64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Task.id" for update`)}
@@ -318,7 +318,7 @@ func (_u *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) {
 			Columns: []string{task.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -331,7 +331,7 @@ func (_u *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) {
 			Columns: []string{task.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
