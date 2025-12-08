@@ -2,18 +2,21 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"rest-api-codegen/internal/entity"
+	"rest-api-codegen/internal/repository"
 	"rest-api-codegen/pkg/ent"
 	"rest-api-codegen/pkg/ent/user"
 )
 
-type IUserRepository interface {
-	GetUserByEmail(um *entity.User, email string) error
-	CreateUser(um *entity.User) error
-}
-
 type userRepository struct {
 	client *ent.Client
+}
+
+func NewUserRepository(client *ent.Client) repository.IUserRepository {
+	return &userRepository{
+		client: client,
+	}
 }
 
 func (ur *userRepository) GetUserByEmail(um *entity.User, email string) error {
@@ -24,7 +27,7 @@ func (ur *userRepository) GetUserByEmail(um *entity.User, email string) error {
 	if err != nil {
 		return err
 	}
-	copyUser(u, um)
+	fromEntToEntityUser(u, um)
 	return nil
 }
 
@@ -37,15 +40,17 @@ func (ur *userRepository) CreateUser(um *entity.User) error {
 	if err != nil {
 		return err
 	}
-	copyUser(u, um)
+	fromEntToEntityUser(u, um)
 	return nil
 }
 
-// CopyUser はentのユーザー情報を共通モデルにコピーする。
-func copyUser(ue *ent.User, um *entity.User) {
-	um.ID = ue.ID
-	um.Email = ue.Email
-	um.Password = ue.Password
-	um.CreatedAt = ue.CreatedAt
-	um.UpdatedAt = ue.UpdatedAt
+func (ur *userRepository) UserExistsByEmail(email string) (bool, error) {
+	exists, err := ur.client.User.
+		Query().
+		Where(user.Email(email)).
+		Exist(context.Background())
+	if err != nil {
+		return false, fmt.Errorf("failed to check user existence: %w", err)
+	}
+	return exists, nil
 }

@@ -38,20 +38,25 @@ paths:
                 email: user1@test.com
                 password: xxxxxxxxxxx
           headers: {}
-        '400':
+        '409':
           description: ''
           content:
-            application/json:
+            application/problem+json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ProblemDetails'
+              example:
+                code: 500
+                message: 'error creating user: user1@test.com'
           headers: {}
         '500':
           description: ''
           content:
-            application/json:
+            application/problem+json:
               schema:
-                type: string
-              example: 'password: password is required.'
+                $ref: '#/components/schemas/ProblemDetails'
+              example:
+                code: 500
+                message: 'password: password is required.'
           headers: {}
       security: []
       x-s2o-warning: Operation post:/signup has multiple requestBodies
@@ -83,7 +88,13 @@ paths:
       responses:
         '200':
           description: ''
-          headers: {}
+          headers:
+            Set-Cookie:
+              example: token=abc123xyz789; Path=/; HttpOnly; Secure; SameSite=Strict
+              required: false
+              description: セッションIDを含むHTTP Cookieヘッダー。
+              schema:
+                type: string
         '400':
           description: ''
           content:
@@ -96,10 +107,12 @@ paths:
           content:
             application/json:
               schema:
-                type: string
-              example: >-
-                crypto/bcrypt: hashedPassword is not the hash of the given
-                password
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 500
+                message: >-
+                  crypto/bcrypt: hashedPassword is not the hash of the given
+                  password
           headers: {}
       security: []
   /logout:
@@ -114,7 +127,12 @@ paths:
       responses:
         '200':
           description: ''
-          headers: {}
+          headers:
+            Set-Cookie:
+              required: false
+              description: クッキーが空になる
+              schema:
+                type: string
       security: []
   /csrf:
     get:
@@ -404,7 +422,7 @@ components:
         - title
         - created_at
         - updated_at
-    ApiResponse:
+    JwtError:
       type: object
       properties:
         message:
@@ -412,13 +430,59 @@ components:
           description: ユーザ向けのメッセージ。
       required:
         - message
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: エラーコード。
+        message:
+          type: string
+          description: エラーメッセージ。
+      required:
+        - code
+        - message
+    ProblemDetails:
+      type: object
+      required:
+        - type
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri
+          description: エラータイプを識別するURI。
+          example: https://example.com/probs/not-found
+        title:
+          type: string
+          description: エラーの短い要約。
+          example: リソースが見つかりません
+        status:
+          type: integer
+          format: int32
+          description: 発生したHTTPステータスコード。
+          example: 404
+        detail:
+          type: string
+          description: 特定の発生事象に関する詳細な説明。
+          example: 指定されたIDを持つアイテムは存在しません。
+        instance:
+          type: string
+          format: uri
+          description: エラーが発生したリソースのURI。
+          example: /users/12345
+        request_id:
+          type: string
+          description: デバッグ用のリクエストID。
+          example: req-xyz-123
   responses:
     JWTトークンエラー:
       description: JWT認証のエラー。
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ApiResponse'
+            $ref: '#/components/schemas/JwtError'
           examples:
             JWTトークンエラー:
               summary: JWTトークンエラー
