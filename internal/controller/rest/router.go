@@ -8,7 +8,9 @@ import (
 
 func NewRouter() *echo.Echo {
 	e := echo.New()
-	handler := v1.NewStrictHandler(v1.NewServer(), nil)
+	uc := v1.NewUserController()
+	tc := v1.NewTaskController()
+	handler := v1.NewStrictHandler(v1.NewServer(uc, tc), nil)
 	v1.RegisterHandlersWithBaseURL(e, handler, "")
 	return e
 }

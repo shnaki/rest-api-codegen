@@ -5,6 +5,7 @@ import (
 )
 
 func main() {
+	// REST APIサーバーを開始する。
 	r := rest.NewRouter()
 	r.Logger.Fatal(r.Start(":1323"))
 }
