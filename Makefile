@@ -1,8 +1,8 @@
 generate-ent:
-	go generate ./ent
+	go generate ./pkg/ent
 
 generate-oapi:
-	go generate ./api
+	go generate ./internal/controller/rest/v1
 
 tidy:
 	go mod tidy

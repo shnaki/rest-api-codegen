@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"rest-api-codegen/db"
+	"rest-api-codegen/internal/repository/db"
 )
 
 func main() {
