@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Echo Todo API
+  title: Todo API
   description: TodoアプリのためのAPIです。
   version: '1.0'
   contact: {}
@@ -30,7 +30,7 @@ paths:
         '201':
           description: Created
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
               example:
