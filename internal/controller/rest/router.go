@@ -11,6 +11,6 @@ func NewRouter() *echo.Echo {
 	uc := v1.NewUserController()
 	tc := v1.NewTaskController()
 	handler := v1.NewStrictHandler(v1.NewServer(uc, tc), nil)
-	v1.RegisterHandlersWithBaseURL(e, handler, "")
+	v1.RegisterHandlersWithBaseURL(e, handler, "/v1")
 	return e
 }
