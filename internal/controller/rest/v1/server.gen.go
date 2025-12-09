@@ -138,14 +138,14 @@ type ServerInterface interface {
 	// (POST /tasks)
 	CreateTask(ctx echo.Context) error
 	// タスクの削除
-	// (DELETE /tasks/{taskId})
-	DeleteTask(ctx echo.Context, taskId int) error
+	// (DELETE /tasks/{taskID})
+	DeleteTask(ctx echo.Context, taskID uint64) error
 	// タスクの取得
-	// (GET /tasks/{taskId})
-	GetTaskById(ctx echo.Context, taskId int) error
+	// (GET /tasks/{taskID})
+	GetTaskByID(ctx echo.Context, taskID uint64) error
 	// タスクの更新
-	// (PUT /tasks/{taskId})
-	UpdateTask(ctx echo.Context, taskId int) error
+	// (PUT /tasks/{taskID})
+	UpdateTask(ctx echo.Context, taskID uint64) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -230,48 +230,48 @@ func (w *ServerInterfaceWrapper) CreateTask(ctx echo.Context) error {
 // DeleteTask converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteTask(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "taskId" -------------
-	var taskId int
+	// ------------- Path parameter "taskID" -------------
+	var taskID uint64
 
-	err = runtime.BindStyledParameterWithOptions("simple", "taskId", ctx.Param("taskId"), &taskId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "taskID", ctx.Param("taskID"), &taskID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter taskId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter taskID: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.DeleteTask(ctx, taskId)
+	err = w.Handler.DeleteTask(ctx, taskID)
 	return err
 }
 
-// GetTaskById converts echo context to params.
-func (w *ServerInterfaceWrapper) GetTaskById(ctx echo.Context) error {
+// GetTaskByID converts echo context to params.
+func (w *ServerInterfaceWrapper) GetTaskByID(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "taskId" -------------
-	var taskId int
+	// ------------- Path parameter "taskID" -------------
+	var taskID uint64
 
-	err = runtime.BindStyledParameterWithOptions("simple", "taskId", ctx.Param("taskId"), &taskId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "taskID", ctx.Param("taskID"), &taskID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter taskId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter taskID: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetTaskById(ctx, taskId)
+	err = w.Handler.GetTaskByID(ctx, taskID)
 	return err
 }
 
 // UpdateTask converts echo context to params.
 func (w *ServerInterfaceWrapper) UpdateTask(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "taskId" -------------
-	var taskId int
+	// ------------- Path parameter "taskID" -------------
+	var taskID uint64
 
-	err = runtime.BindStyledParameterWithOptions("simple", "taskId", ctx.Param("taskId"), &taskId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "taskID", ctx.Param("taskID"), &taskID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter taskId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter taskID: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.UpdateTask(ctx, taskId)
+	err = w.Handler.UpdateTask(ctx, taskID)
 	return err
 }
 
@@ -309,9 +309,9 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/signup", wrapper.SignUp)
 	router.GET(baseURL+"/tasks", wrapper.GetAllTasks)
 	router.POST(baseURL+"/tasks", wrapper.CreateTask)
-	router.DELETE(baseURL+"/tasks/:taskId", wrapper.DeleteTask)
-	router.GET(baseURL+"/tasks/:taskId", wrapper.GetTaskById)
-	router.PUT(baseURL+"/tasks/:taskId", wrapper.UpdateTask)
+	router.DELETE(baseURL+"/tasks/:taskID", wrapper.DeleteTask)
+	router.GET(baseURL+"/tasks/:taskID", wrapper.GetTaskByID)
+	router.PUT(baseURL+"/tasks/:taskID", wrapper.UpdateTask)
 
 }
 
@@ -368,10 +368,10 @@ func (response Login400JSONResponse) VisitLoginResponse(w http.ResponseWriter) e
 	return json.NewEncoder(w).Encode(response)
 }
 
-type Login500JSONResponse ErrorResponse
+type Login500ApplicationProblemPlusJSONResponse ProblemDetails
 
-func (response Login500JSONResponse) VisitLoginResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
+func (response Login500ApplicationProblemPlusJSONResponse) VisitLoginResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(500)
 
 	return json.NewEncoder(w).Encode(response)
@@ -458,10 +458,10 @@ func (response GetAllTasks401JSONResponse) VisitGetAllTasksResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetAllTasks500JSONResponse string
+type GetAllTasks500ApplicationProblemPlusJSONResponse ProblemDetails
 
-func (response GetAllTasks500JSONResponse) VisitGetAllTasksResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
+func (response GetAllTasks500ApplicationProblemPlusJSONResponse) VisitGetAllTasksResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(500)
 
 	return json.NewEncoder(w).Encode(response)
@@ -502,17 +502,17 @@ func (response CreateTask401JSONResponse) VisitCreateTaskResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateTask500JSONResponse map[string]interface{}
+type CreateTask500ApplicationProblemPlusJSONResponse ProblemDetails
 
-func (response CreateTask500JSONResponse) VisitCreateTaskResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
+func (response CreateTask500ApplicationProblemPlusJSONResponse) VisitCreateTaskResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(500)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteTaskRequestObject struct {
-	TaskId int `json:"taskId"`
+	TaskID uint64 `json:"taskID"`
 }
 
 type DeleteTaskResponseObject interface {
@@ -536,43 +536,43 @@ func (response DeleteTask401JSONResponse) VisitDeleteTaskResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteTask500JSONResponse string
+type DeleteTask500ApplicationProblemPlusJSONResponse ProblemDetails
 
-func (response DeleteTask500JSONResponse) VisitDeleteTaskResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
+func (response DeleteTask500ApplicationProblemPlusJSONResponse) VisitDeleteTaskResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(500)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetTaskByIdRequestObject struct {
-	TaskId int `json:"taskId"`
+type GetTaskByIDRequestObject struct {
+	TaskID uint64 `json:"taskID"`
 }
 
-type GetTaskByIdResponseObject interface {
-	VisitGetTaskByIdResponse(w http.ResponseWriter) error
+type GetTaskByIDResponseObject interface {
+	VisitGetTaskByIDResponse(w http.ResponseWriter) error
 }
 
-type GetTaskById200JSONResponse TaskResponse
+type GetTaskByID200JSONResponse TaskResponse
 
-func (response GetTaskById200JSONResponse) VisitGetTaskByIdResponse(w http.ResponseWriter) error {
+func (response GetTaskByID200JSONResponse) VisitGetTaskByIDResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetTaskById500JSONResponse string
+type GetTaskByID500ApplicationProblemPlusJSONResponse ProblemDetails
 
-func (response GetTaskById500JSONResponse) VisitGetTaskByIdResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
+func (response GetTaskByID500ApplicationProblemPlusJSONResponse) VisitGetTaskByIDResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(500)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type UpdateTaskRequestObject struct {
-	TaskId int `json:"taskId"`
+	TaskID uint64 `json:"taskID"`
 	Body   *UpdateTaskJSONRequestBody
 }
 
@@ -589,10 +589,10 @@ func (response UpdateTask200JSONResponse) VisitUpdateTaskResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateTask500JSONResponse string
+type UpdateTask500ApplicationProblemPlusJSONResponse ProblemDetails
 
-func (response UpdateTask500JSONResponse) VisitUpdateTaskResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
+func (response UpdateTask500ApplicationProblemPlusJSONResponse) VisitUpdateTaskResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(500)
 
 	return json.NewEncoder(w).Encode(response)
@@ -619,13 +619,13 @@ type StrictServerInterface interface {
 	// (POST /tasks)
 	CreateTask(ctx context.Context, request CreateTaskRequestObject) (CreateTaskResponseObject, error)
 	// タスクの削除
-	// (DELETE /tasks/{taskId})
+	// (DELETE /tasks/{taskID})
 	DeleteTask(ctx context.Context, request DeleteTaskRequestObject) (DeleteTaskResponseObject, error)
 	// タスクの取得
-	// (GET /tasks/{taskId})
-	GetTaskById(ctx context.Context, request GetTaskByIdRequestObject) (GetTaskByIdResponseObject, error)
+	// (GET /tasks/{taskID})
+	GetTaskByID(ctx context.Context, request GetTaskByIDRequestObject) (GetTaskByIDResponseObject, error)
 	// タスクの更新
-	// (PUT /tasks/{taskId})
+	// (PUT /tasks/{taskID})
 	UpdateTask(ctx context.Context, request UpdateTaskRequestObject) (UpdateTaskResponseObject, error)
 }
 
@@ -800,10 +800,10 @@ func (sh *strictHandler) CreateTask(ctx echo.Context) error {
 }
 
 // DeleteTask operation middleware
-func (sh *strictHandler) DeleteTask(ctx echo.Context, taskId int) error {
+func (sh *strictHandler) DeleteTask(ctx echo.Context, taskID uint64) error {
 	var request DeleteTaskRequestObject
 
-	request.TaskId = taskId
+	request.TaskID = taskID
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
 		return sh.ssi.DeleteTask(ctx.Request().Context(), request.(DeleteTaskRequestObject))
@@ -824,25 +824,25 @@ func (sh *strictHandler) DeleteTask(ctx echo.Context, taskId int) error {
 	return nil
 }
 
-// GetTaskById operation middleware
-func (sh *strictHandler) GetTaskById(ctx echo.Context, taskId int) error {
-	var request GetTaskByIdRequestObject
+// GetTaskByID operation middleware
+func (sh *strictHandler) GetTaskByID(ctx echo.Context, taskID uint64) error {
+	var request GetTaskByIDRequestObject
 
-	request.TaskId = taskId
+	request.TaskID = taskID
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetTaskById(ctx.Request().Context(), request.(GetTaskByIdRequestObject))
+		return sh.ssi.GetTaskByID(ctx.Request().Context(), request.(GetTaskByIDRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetTaskById")
+		handler = middleware(handler, "GetTaskByID")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(GetTaskByIdResponseObject); ok {
-		return validResponse.VisitGetTaskByIdResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetTaskByIDResponseObject); ok {
+		return validResponse.VisitGetTaskByIDResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
@@ -850,10 +850,10 @@ func (sh *strictHandler) GetTaskById(ctx echo.Context, taskId int) error {
 }
 
 // UpdateTask operation middleware
-func (sh *strictHandler) UpdateTask(ctx echo.Context, taskId int) error {
+func (sh *strictHandler) UpdateTask(ctx echo.Context, taskID uint64) error {
 	var request UpdateTaskRequestObject
 
-	request.TaskId = taskId
+	request.TaskID = taskID
 
 	var body UpdateTaskJSONRequestBody
 	if err := ctx.Bind(&body); err != nil {
@@ -883,43 +883,42 @@ func (sh *strictHandler) UpdateTask(ctx echo.Context, taskId int) error {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"H4sIAAAAAAAC/9xa/XPTRvr/VzT7/f5WJ7Yc5yBimDlC4Gp6Q1OSXK/DZBjF2jgCWxK76xKX8QyS2hJI",
+	"rg05mpCDmZQMDSFpnPTC9Mpb+WMWO+a/uNldv0i25Beapu3xQyz08uzz8vk8+3lkXwcpM2uZBjQIBsp1",
+	"gCC2TAND/p9zH49Td466L6mzS9196mxS9wl1X7JrKdMg0CDsULWsjJ5SiW4a0cvYNNg5OKtmrUxnMziX",
+	"zaooD5TwuyLgUzWTg+zuLMRYTUOggKyOsW6kJRNJWTUzbaIs1KTL1wgoFAoRgFMzMKuyJ/4fwWmggP+L",
+	"NsKMiqs4eu4aOYOQicQzGsQppFssCuFNZesflc2X1C7WXaE3HNAwz2PjBi5Uk8ZOWMi0ICK6CD1lavys",
+	"33jDoLPP/rq3mOUIIHmLxaYbBKYhAoVII+BwE+5D6rrUecHN/eQzhAnSjTR3GcGrOR1BDSgXhVMN25P1",
+	"+82pyzBF2Lr11LREFO6Ru8Fd+LG0eIfad1jeenetnU+jyJzKwOwIJKqewa2eafxCq2MHt56Viv+idvFg",
+	"9fnB3bU3z+crPzyk9vbb5XVqr1JnvvJk/+DpHrW3Klvfl+99JfysAhgooLxwkz//DXUWqL2WHKHOUnnB",
+	"pvYj6qxT5xF1v6Tut9TeLe3cKz3YpPYKtX+m9n3q/DMw5AjQDUxUI9W2rPaCcJebW6PuFnVe8Tw+o3Zx",
+	"4kKy2ctoDkOEo3J8IDEIIoAxQiVAATmkB7nAkg4xuaRrQZW8Sd1FXrq9g7ubvJJbjJXOJlvenUuONK+O",
+	"4NW+2fxnfXJ8IGg1TFSSwwGl8YT4/vj4KDf/JQ/zNTv206O+XCKW8ESoG2QgHsgeopNM+yQXD9Z2qP15",
+	"ZcM+ePp5c1D+pC9UNuZZze156tyuVzgoWnGiDelfc9SsUGepsnOvNPedgGFAUWcIsbASjVbP9KfMbNRC",
+	"5hSOGibpmzZzhtax1k0M41drqalXJohv4yq+ckHApJVsoakVddvlbVPEOUfd7W64L0yGexLaYxFUCdQu",
+	"qaS9PwerL94u/Lu88l151QkjptbeRA34jYzrBvlTojfw9ZChCMhZWlfBle8/LS/vtQmuKdm65gGBJ4O+",
+	"FYNqMYEh8qAiZA/gf9eps02dDbaZu3Nl94vStz8I1/z1g9nAtu2zVd1MXrJEOeusI7jfs9iDk2apGF8z",
+	"kdbRaOnZfnn5Jrd+h/ee3YDtOCSDwm3PYuHZaiD3d5kuvYtE3X9efnBLdKvSzmK3LAgCnfC/NVkFvjFO",
+	"mzVxqaYYwFqE2bipmTymFdae7SLbHB2b2sVTo0lqP2atVEQp6Mfvl06NJpmMhAgLI3J/jAVuWtBQLR0o",
+	"YKA/1i/zYpIZnuVoCqNpdpCGATg/PXbhrF+sLh3cXSvPLYpOLjxgReOiOKmxR5i9iF9fx2Ox7qU0vxOj",
+	"6UvEvAKZE7Nnkx9Na8nhs8PpTz7Aw+emz+c+/tvER5+c0pPnL189kwE+IdzUMz2GOgbXjaRs2AuurH8J",
+	"oaJhKod0kgfKxcmIZxBoWZ8rt8rDBeaFmsZsPSZ2wCSzEs2YaZ1HYZntWxIjxQ519njLZSUrFdfKy6/C",
+	"S/ZXbpmBAqlZSCBiS3eXrcYWDhiq2VYOVQ0iEAGGmmXn/97Hnuwb//CDM+eBt1DNiZ6si7VhU8v3hpdq",
+	"r+Dpkv9MICZMQniblgLYWSbbuh6bvDtAwQ8EgnKwEAzyJgBEqgnht4xB0nfaNK/ogfvlC65E/0Pdx9Td",
+	"5+q7tLhNnRtMMEriMereYze5N6pDmrcAHJUn1amUHB+YzX927PjQCWlUJTMnoyek9wmxPjQy+RPSGAMj",
+	"PCGNqVk4phN4cowgPUXaVobFnuiKwm1stFIjAgbbGrXEHPReUH/g4+ZgLOaZHEEK5S1iRqf4pyLNqHgG",
+	"aqNVAEg6lgyTSGQG8iuSOc2P0/qn0JDqMOkaHE1DWq/c9zI0lO5mjnTDd2epZm2db6tzbZnOjB42cnc5",
+	"cneq49yT59TepvYWdeY7wKqLBFVDCs4R1tNGzuoiR0ISd9EKx/S0MWGBP3wrkg/JaSaZZJ/vs41/vfpf",
+	"lYcBXDkthDngjWboEHsCRMhEEtf9upGWWHyK1BTloXL+sJtaLfNKvUexTlYrf/8RNiwflYL5SFR8BYeK",
+	"Se8Y9+anG5WNx4yQXy+Xfl4JJ+RfIDmVyYxzw79MVV70T9AgHosP9snxvtixcXlIkYeUxGB/bGBQjsnv",
+	"xYaUWKyB/prEZuHJ/smxCzOFSMeFj/UfPzYgDyV8C8f9C8c7L9xkhimqBjZ0ArO4E0h8LyDqb3iAipCa",
+	"D8N7QjSbILP1ckVDX3r3TJijQXsNqlWc2kWBUw/sWU3AJBvCg7eeOtidpfLyXmXj6zevHrQfnDhGWAV+",
+	"yfZTHwc5VrvuDt53YL/GBhNGgHhciQ0qg4n+wVjieGLIT72BiC+cgTYMCLHTY/zhGxR4dwncbjr8H2cP",
+	"tYte7Leyp75pRK+zj+RIQTApA0mA0Gz9gqL6arHKs9Kt229XH4UzbITbrTKs7bAb9C60jma5OulaKplp",
+	"zLnCf9DMHC8Au3iPNNlCtESAND963DTGTAFnSTOhGKjgrI794+MRIUtUO6gjB6qPTuCpvL5bf6fWIkEY",
+	"ZobzvLx/FNzEDqdB/7oK5TDb87sCGsEUU9UMy7Uvmo4ey+HqIvcOWBZfkoQ3wglepd9/I3wHDcTRL/t/",
+	"cVFevlnaWSl/s1f58Yu39lfeH1rU8CsyolVVUyEC4k0m5hZLt9faPCn38oOMntVWb8Ljt2IST4kiZfSs",
+	"TqAmZdVZSY5JqRkV9f8WpBIsCBAdhfqp6zXQ8iGWTWoeEIPCZOG/AQAA//88C58sNyQAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

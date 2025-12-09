@@ -59,7 +59,6 @@ paths:
                 message: 'password: password is required.'
           headers: {}
       security: []
-      x-s2o-warning: Operation post:/signup has multiple requestBodies
   /login:
     post:
       summary: ログイン
@@ -105,9 +104,9 @@ paths:
         '500':
           description: ''
           content:
-            application/json:
+            application/problem+json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ProblemDetails'
               example:
                 code: 500
                 message: >-
@@ -194,9 +193,9 @@ paths:
         '500':
           description: ''
           content:
-            application/json:
+            application/problem+json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ProblemDetails'
           headers: {}
       security: []
     post:
@@ -242,28 +241,28 @@ paths:
         '500':
           description: ''
           content:
-            application/json:
+            application/problem+json:
               schema:
-                type: object
-                properties: {}
+                $ref: '#/components/schemas/ProblemDetails'
           headers: {}
       security: []
-  /tasks/{taskId}:
+  /tasks/{taskID}:
     get:
       summary: タスクの取得
       deprecated: false
       description: 指定されたIDのタスクを返す。
-      operationId: getTaskById
+      operationId: getTaskByID
       tags:
         - task
       parameters:
-        - name: taskId
+        - name: taskID
           in: path
           description: タスクのID。
           required: true
-          example: 2
+          example: 1
           schema:
             type: integer
+            format: uint64
       responses:
         '200':
           description: ''
@@ -280,9 +279,9 @@ paths:
         '500':
           description: ''
           content:
-            application/json:
+            application/problem+json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ProblemDetails'
               example: record not found
           headers: {}
       security: []
@@ -294,13 +293,14 @@ paths:
       tags:
         - task
       parameters:
-        - name: taskId
+        - name: taskID
           in: path
           description: タスクのID。
           required: true
           example: 1
           schema:
             type: integer
+            format: uint64
       requestBody:
         content:
           application/json:
@@ -327,9 +327,9 @@ paths:
         '500':
           description: ''
           content:
-            application/json:
+            application/problem+json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ProblemDetails'
               example: 'title: limited max 10 char.'
           headers: {}
       security: []
@@ -341,13 +341,14 @@ paths:
       tags:
         - task
       parameters:
-        - name: taskId
+        - name: taskID
           in: path
           description: タスクのID。
           required: true
           example: 1
           schema:
             type: integer
+            format: uint64
       responses:
         '204':
           description: ''
@@ -358,9 +359,9 @@ paths:
         '500':
           description: ''
           content:
-            application/json:
+            application/problem+json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ProblemDetails'
               example: object does not exist
           headers: {}
       security: []

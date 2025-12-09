@@ -45,8 +45,8 @@ func (uc *userController) SignUp(ctx context.Context, req SignUpRequestObject) (
 	} else if err != nil {
 		return SignUp500ApplicationProblemPlusJSONResponse(ProblemDetails{
 			Type:   "about:blank",
-			Status: http.StatusInternalServerError,
 			Title:  "Internal Server Error",
+			Status: http.StatusInternalServerError,
 			Detail: &errMessage,
 		}), nil
 	}
@@ -63,9 +63,12 @@ func (uc *userController) Login(ctx context.Context, req LoginRequestObject) (Lo
 	user.Password = req.Body.Password
 	tokenString, err := uc.uu.Login(user)
 	if err != nil {
-		return Login500JSONResponse(ErrorResponse{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
+		errMessage := err.Error()
+		return Login500ApplicationProblemPlusJSONResponse(ProblemDetails{
+			Type:   "about:blank",
+			Title:  "Internal Server Error",
+			Status: http.StatusInternalServerError,
+			Detail: &errMessage,
 		}), nil
 	}
 

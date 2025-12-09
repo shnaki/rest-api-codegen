@@ -44,7 +44,7 @@ func (s *Server) DeleteTask(ctx context.Context, req DeleteTaskRequestObject) (D
 	return s.tc.DeleteTask(ctx, req)
 }
 
-func (s *Server) GetTaskById(ctx context.Context, req GetTaskByIdRequestObject) (GetTaskByIdResponseObject, error) {
+func (s *Server) GetTaskByID(ctx context.Context, req GetTaskByIDRequestObject) (GetTaskByIDResponseObject, error) {
 	return s.tc.GetTaskById(ctx, req)
 }
 

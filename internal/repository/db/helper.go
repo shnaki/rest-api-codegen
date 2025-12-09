@@ -5,11 +5,20 @@ import (
 	"rest-api-codegen/pkg/ent"
 )
 
-// fromEntToEntityUser はentのユーザー情報を共通モデルにコピーする。
-func fromEntToEntityUser(ue *ent.User, um *entity.User) {
-	um.ID = ue.ID
-	um.Email = ue.Email
-	um.Password = ue.Password
-	um.CreatedAt = ue.CreatedAt
-	um.UpdatedAt = ue.UpdatedAt
+// fromEntToEntityUser はentのユーザー情報をエンティティにコピーする。
+func fromEntToEntityUser(entUser *ent.User, userEntity *entity.User) {
+	userEntity.ID = entUser.ID
+	userEntity.Email = entUser.Email
+	userEntity.Password = entUser.Password
+	userEntity.CreatedAt = entUser.CreatedAt
+	userEntity.UpdatedAt = entUser.UpdatedAt
+}
+
+// fromEntToEntityTask はentのタスク情報をエンティティにコピーする。
+func fromEntToEntityTask(entTask *ent.Task, taskEntity *entity.Task) {
+	taskEntity.ID = entTask.ID
+	taskEntity.Title = entTask.Title
+	taskEntity.CreatedAt = entTask.CreatedAt
+	taskEntity.UpdatedAt = entTask.UpdatedAt
+	taskEntity.UserId = entTask.UserID
 }
