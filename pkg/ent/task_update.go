@@ -49,6 +49,26 @@ func (_u *TaskUpdate) SetNillableTitle(v *string) *TaskUpdate {
 	return _u
 }
 
+// SetUserID sets the "user_id" field.
+func (_u *TaskUpdate) SetUserID(v uint64) *TaskUpdate {
+	_u.mutation.SetUserID(v)
+	return _u
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_u *TaskUpdate) SetNillableUserID(v *uint64) *TaskUpdate {
+	if v != nil {
+		_u.SetUserID(*v)
+	}
+	return _u
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (_u *TaskUpdate) ClearUserID() *TaskUpdate {
+	_u.mutation.ClearUserID()
+	return _u
+}
+
 // SetOwnerID sets the "owner" edge to the User entity by ID.
 func (_u *TaskUpdate) SetOwnerID(id uint64) *TaskUpdate {
 	_u.mutation.SetOwnerID(id)
@@ -196,6 +216,26 @@ func (_u *TaskUpdateOne) SetNillableTitle(v *string) *TaskUpdateOne {
 	if v != nil {
 		_u.SetTitle(*v)
 	}
+	return _u
+}
+
+// SetUserID sets the "user_id" field.
+func (_u *TaskUpdateOne) SetUserID(v uint64) *TaskUpdateOne {
+	_u.mutation.SetUserID(v)
+	return _u
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_u *TaskUpdateOne) SetNillableUserID(v *uint64) *TaskUpdateOne {
+	if v != nil {
+		_u.SetUserID(*v)
+	}
+	return _u
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (_u *TaskUpdateOne) ClearUserID() *TaskUpdateOne {
+	_u.mutation.ClearUserID()
 	return _u
 }
 

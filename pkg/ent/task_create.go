@@ -55,6 +55,20 @@ func (_c *TaskCreate) SetTitle(v string) *TaskCreate {
 	return _c
 }
 
+// SetUserID sets the "user_id" field.
+func (_c *TaskCreate) SetUserID(v uint64) *TaskCreate {
+	_c.mutation.SetUserID(v)
+	return _c
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (_c *TaskCreate) SetNillableUserID(v *uint64) *TaskCreate {
+	if v != nil {
+		_c.SetUserID(*v)
+	}
+	return _c
+}
+
 // SetOwnerID sets the "owner" edge to the User entity by ID.
 func (_c *TaskCreate) SetOwnerID(id uint64) *TaskCreate {
 	_c.mutation.SetOwnerID(id)
@@ -182,7 +196,7 @@ func (_c *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_tasks = &nodes[0]
+		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

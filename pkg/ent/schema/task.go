@@ -15,6 +15,10 @@ type Task struct {
 func (Task) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("title"),
+		field.Uint64("user_id").
+			Comment("タスク所有者のユーザーID。").
+			// Edge定義でUnique()を使っているので、ここではOptional()のままでOK。
+			Optional(),
 	}
 }
 
@@ -23,7 +27,9 @@ func (Task) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("owner", User.Type).
 			Ref("tasks").
-			Unique(),
+			Unique().
+			// このエッジが user_id フィールドを使うことをentに指示する。
+			Field("user_id"),
 	}
 }
 

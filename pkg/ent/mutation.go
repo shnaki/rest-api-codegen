@@ -252,6 +252,55 @@ func (m *TaskMutation) ResetTitle() {
 	m.title = nil
 }
 
+// SetUserID sets the "user_id" field.
+func (m *TaskMutation) SetUserID(u uint64) {
+	m.owner = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *TaskMutation) UserID() (r uint64, exists bool) {
+	v := m.owner
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldUserID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *TaskMutation) ClearUserID() {
+	m.owner = nil
+	m.clearedFields[task.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *TaskMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[task.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *TaskMutation) ResetUserID() {
+	m.owner = nil
+	delete(m.clearedFields, task.FieldUserID)
+}
+
 // SetOwnerID sets the "owner" edge to the User entity by id.
 func (m *TaskMutation) SetOwnerID(id uint64) {
 	m.owner = &id
@@ -260,11 +309,12 @@ func (m *TaskMutation) SetOwnerID(id uint64) {
 // ClearOwner clears the "owner" edge to the User entity.
 func (m *TaskMutation) ClearOwner() {
 	m.clearedowner = true
+	m.clearedFields[task.FieldUserID] = struct{}{}
 }
 
 // OwnerCleared reports if the "owner" edge to the User entity was cleared.
 func (m *TaskMutation) OwnerCleared() bool {
-	return m.clearedowner
+	return m.UserIDCleared() || m.clearedowner
 }
 
 // OwnerID returns the "owner" edge ID in the mutation.
@@ -325,7 +375,7 @@ func (m *TaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TaskMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.created_at != nil {
 		fields = append(fields, task.FieldCreatedAt)
 	}
@@ -334,6 +384,9 @@ func (m *TaskMutation) Fields() []string {
 	}
 	if m.title != nil {
 		fields = append(fields, task.FieldTitle)
+	}
+	if m.owner != nil {
+		fields = append(fields, task.FieldUserID)
 	}
 	return fields
 }
@@ -349,6 +402,8 @@ func (m *TaskMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case task.FieldTitle:
 		return m.Title()
+	case task.FieldUserID:
+		return m.UserID()
 	}
 	return nil, false
 }
@@ -364,6 +419,8 @@ func (m *TaskMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdatedAt(ctx)
 	case task.FieldTitle:
 		return m.OldTitle(ctx)
+	case task.FieldUserID:
+		return m.OldUserID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Task field %s", name)
 }
@@ -394,6 +451,13 @@ func (m *TaskMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTitle(v)
 		return nil
+	case task.FieldUserID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Task field %s", name)
 }
@@ -401,13 +465,16 @@ func (m *TaskMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *TaskMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *TaskMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
 	return nil, false
 }
 
@@ -423,7 +490,11 @@ func (m *TaskMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *TaskMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(task.FieldUserID) {
+		fields = append(fields, task.FieldUserID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -436,6 +507,11 @@ func (m *TaskMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *TaskMutation) ClearField(name string) error {
+	switch name {
+	case task.FieldUserID:
+		m.ClearUserID()
+		return nil
+	}
 	return fmt.Errorf("unknown Task nullable field %s", name)
 }
 
@@ -451,6 +527,9 @@ func (m *TaskMutation) ResetField(name string) error {
 		return nil
 	case task.FieldTitle:
 		m.ResetTitle()
+		return nil
+	case task.FieldUserID:
+		m.ResetUserID()
 		return nil
 	}
 	return fmt.Errorf("unknown Task field %s", name)
