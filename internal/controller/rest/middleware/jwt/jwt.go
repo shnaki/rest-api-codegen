@@ -14,17 +14,17 @@ const userContextKey contextKey = "userID"
 func SuccessHandler(c echo.Context) {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
-	userId, ok := claims["user_id"]
+	userID, ok := claims["user_id"]
 
 	if ok {
-		// 標準の http.Request の context に userId をセットする。
-		ctx := context.WithValue(c.Request().Context(), userContextKey, userId)
+		// 標準の http.Request の context に userID をセットする。
+		ctx := context.WithValue(c.Request().Context(), userContextKey, userID)
 		// 更新されたコンテキストを持つリクエストで echo.Context を更新する。
 		c.SetRequest(c.Request().WithContext(ctx))
 	}
 }
 
-func GetUserIdFromContext(ctx context.Context) uint64 {
-	userId := ctx.Value(userContextKey)
-	return uint64(userId.(float64))
+func GetUserIDFromContext(ctx context.Context) uint64 {
+	userID := ctx.Value(userContextKey)
+	return uint64(userID.(float64))
 }

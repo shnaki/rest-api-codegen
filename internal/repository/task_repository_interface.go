@@ -6,9 +6,9 @@ import (
 )
 
 type ITaskRepository interface {
-	GetAllTasks(ctx context.Context, userId uint64) ([]*entity.Task, error)
-	GetTaskById(ctx context.Context, userId uint64, taskId uint64) (*entity.Task, error)
+	GetAllTasks(ctx context.Context, userID uint64) ([]*entity.Task, error)
+	GetTaskByID(ctx context.Context, userID uint64, taskID uint64) (*entity.Task, error)
 	CreateTask(ctx context.Context, te *entity.Task) error
-	UpdateTask(ctx context.Context, te *entity.Task, userId uint64, taskId uint64) error
-	DeleteTask(ctx context.Context, userId uint64, taskId uint64) error
+	UpdateTask(ctx context.Context, te *entity.Task, userID uint64, taskID uint64) error
+	DeleteTask(ctx context.Context, userID uint64, taskID uint64) error
 }

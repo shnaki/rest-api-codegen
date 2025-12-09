@@ -20,5 +20,5 @@ func fromEntToEntityTask(entTask *ent.Task, taskEntity *entity.Task) {
 	taskEntity.Title = entTask.Title
 	taskEntity.CreatedAt = entTask.CreatedAt
 	taskEntity.UpdatedAt = entTask.UpdatedAt
-	taskEntity.UserId = entTask.UserID
+	taskEntity.UserID = entTask.UserID
 }

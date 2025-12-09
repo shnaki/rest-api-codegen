@@ -12,7 +12,7 @@ type ITaskController interface {
 	GetAllTasks(ctx context.Context, req GetAllTasksRequestObject) (GetAllTasksResponseObject, error)
 	CreateTask(ctx context.Context, req CreateTaskRequestObject) (CreateTaskResponseObject, error)
 	DeleteTask(ctx context.Context, req DeleteTaskRequestObject) (DeleteTaskResponseObject, error)
-	GetTaskById(ctx context.Context, req GetTaskByIDRequestObject) (GetTaskByIDResponseObject, error)
+	GetTaskByID(ctx context.Context, req GetTaskByIDRequestObject) (GetTaskByIDResponseObject, error)
 	UpdateTask(ctx context.Context, req UpdateTaskRequestObject) (UpdateTaskResponseObject, error)
 }
 
@@ -27,8 +27,8 @@ func NewTaskController(tu usecase.ITaskUsecase) ITaskController {
 }
 
 func (tc *taskController) GetAllTasks(ctx context.Context, req GetAllTasksRequestObject) (GetAllTasksResponseObject, error) {
-	userId := jwt.GetUserIdFromContext(ctx)
-	tasks, err := tc.tu.GetAllTasks(userId)
+	userID := jwt.GetUserIDFromContext(ctx)
+	tasks, err := tc.tu.GetAllTasks(userID)
 	if err != nil {
 		errMessage := err.Error()
 		return GetAllTasks500ApplicationProblemPlusJSONResponse(ProblemDetails{
@@ -48,10 +48,10 @@ func (tc *taskController) GetAllTasks(ctx context.Context, req GetAllTasksReques
 }
 
 func (tc *taskController) CreateTask(ctx context.Context, req CreateTaskRequestObject) (CreateTaskResponseObject, error) {
-	userId := jwt.GetUserIdFromContext(ctx)
+	userID := jwt.GetUserIDFromContext(ctx)
 	t := entity.Task{
 		Title:  req.Body.Title,
-		UserId: userId,
+		UserID: userID,
 	}
 	if err := tc.tu.CreateTask(&t); err != nil {
 		errMessage := err.Error()
@@ -67,9 +67,9 @@ func (tc *taskController) CreateTask(ctx context.Context, req CreateTaskRequestO
 	return CreateTask201JSONResponse(taskResponse), nil
 }
 
-func (tc *taskController) GetTaskById(ctx context.Context, req GetTaskByIDRequestObject) (GetTaskByIDResponseObject, error) {
-	userId := jwt.GetUserIdFromContext(ctx)
-	t, err := tc.tu.GetTaskById(userId, req.TaskID)
+func (tc *taskController) GetTaskByID(ctx context.Context, req GetTaskByIDRequestObject) (GetTaskByIDResponseObject, error) {
+	userID := jwt.GetUserIDFromContext(ctx)
+	t, err := tc.tu.GetTaskByID(userID, req.TaskID)
 	if err != nil {
 		errMessage := err.Error()
 		return GetTaskByID500ApplicationProblemPlusJSONResponse(ProblemDetails{
@@ -85,11 +85,11 @@ func (tc *taskController) GetTaskById(ctx context.Context, req GetTaskByIDReques
 }
 
 func (tc *taskController) UpdateTask(ctx context.Context, req UpdateTaskRequestObject) (UpdateTaskResponseObject, error) {
-	userId := jwt.GetUserIdFromContext(ctx)
+	userID := jwt.GetUserIDFromContext(ctx)
 	t := entity.Task{
 		Title: req.Body.Title,
 	}
-	if err := tc.tu.UpdateTask(&t, userId, req.TaskID); err != nil {
+	if err := tc.tu.UpdateTask(&t, userID, req.TaskID); err != nil {
 		errMessage := err.Error()
 		return UpdateTask500ApplicationProblemPlusJSONResponse(ProblemDetails{
 			Type:   "about:blank",
@@ -104,8 +104,8 @@ func (tc *taskController) UpdateTask(ctx context.Context, req UpdateTaskRequestO
 }
 
 func (tc *taskController) DeleteTask(ctx context.Context, req DeleteTaskRequestObject) (DeleteTaskResponseObject, error) {
-	userId := jwt.GetUserIdFromContext(ctx)
-	if err := tc.tu.DeleteTask(userId, req.TaskID); err != nil {
+	userID := jwt.GetUserIDFromContext(ctx)
+	if err := tc.tu.DeleteTask(userID, req.TaskID); err != nil {
 		errMessage := err.Error()
 		return DeleteTask500ApplicationProblemPlusJSONResponse(ProblemDetails{
 			Type:   "about:blank",

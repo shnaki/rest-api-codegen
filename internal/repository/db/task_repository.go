@@ -13,9 +13,9 @@ type taskRepository struct {
 	client *ent.Client
 }
 
-func (tr *taskRepository) GetAllTasks(ctx context.Context, userId uint64) ([]*entity.Task, error) {
+func (tr *taskRepository) GetAllTasks(ctx context.Context, userID uint64) ([]*entity.Task, error) {
 	tasks, err := tr.client.Task.Query().
-		Where(task.HasOwnerWith(user.ID(userId))).
+		Where(task.HasOwnerWith(user.ID(userID))).
 		All(ctx)
 	if err != nil {
 		return nil, err
@@ -29,13 +29,13 @@ func (tr *taskRepository) GetAllTasks(ctx context.Context, userId uint64) ([]*en
 	return resultTasks, nil
 }
 
-func (tr *taskRepository) GetTaskById(ctx context.Context, userId uint64, taskId uint64) (*entity.Task, error) {
+func (tr *taskRepository) GetTaskByID(ctx context.Context, userID uint64, taskID uint64) (*entity.Task, error) {
 	t, err := tr.client.Task.Query().
 		Where(
 			task.HasOwnerWith(
-				user.ID(userId),
+				user.ID(userID),
 			),
-			task.ID(taskId),
+			task.ID(taskID),
 		).
 		Only(ctx)
 	if err != nil {
@@ -49,7 +49,7 @@ func (tr *taskRepository) GetTaskById(ctx context.Context, userId uint64, taskId
 func (tr *taskRepository) CreateTask(ctx context.Context, te *entity.Task) error {
 	t, err := tr.client.Task.Create().
 		SetTitle(te.Title).
-		SetOwnerID(te.UserId).
+		SetOwnerID(te.UserID).
 		Save(ctx)
 	if err != nil {
 		return err
@@ -58,11 +58,11 @@ func (tr *taskRepository) CreateTask(ctx context.Context, te *entity.Task) error
 	return nil
 }
 
-func (tr *taskRepository) UpdateTask(ctx context.Context, te *entity.Task, userId uint64, taskId uint64) error {
+func (tr *taskRepository) UpdateTask(ctx context.Context, te *entity.Task, userID uint64, taskID uint64) error {
 	t, err := tr.client.Task.
-		UpdateOneID(taskId).
+		UpdateOneID(taskID).
 		Where(
-			task.UserID(userId),
+			task.UserID(userID),
 		).
 		SetTitle(te.Title).
 		Save(ctx)
@@ -73,11 +73,11 @@ func (tr *taskRepository) UpdateTask(ctx context.Context, te *entity.Task, userI
 	return nil
 }
 
-func (tr *taskRepository) DeleteTask(ctx context.Context, userId uint64, taskId uint64) error {
+func (tr *taskRepository) DeleteTask(ctx context.Context, userID uint64, taskID uint64) error {
 	return tr.client.Task.
-		DeleteOneID(taskId).
+		DeleteOneID(taskID).
 		Where(
-			task.UserID(userId),
+			task.UserID(userID),
 		).
 		Exec(ctx)
 }
