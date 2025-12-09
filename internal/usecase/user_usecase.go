@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -29,7 +30,7 @@ func NewUserUsecase(ur repository.IUserRepository) IUserUsecase {
 
 func (uu *userUsecase) Signup(ue entity.User) (entity.User, error) {
 	// 登録済みかどうかをチェックする。
-	exists, err := uu.ur.UserExistsByEmail(ue.Email)
+	exists, err := uu.ur.UserExistsByEmail(context.Background(), ue.Email)
 	if err != nil {
 		return entity.User{}, err
 	}
@@ -43,7 +44,7 @@ func (uu *userUsecase) Signup(ue entity.User) (entity.User, error) {
 		return entity.User{}, err
 	}
 	newUser := entity.User{Email: ue.Email, Password: string(hash)}
-	if err := uu.ur.CreateUser(&newUser); err != nil {
+	if err := uu.ur.CreateUser(context.Background(), &newUser); err != nil {
 		return entity.User{}, fmt.Errorf("error creating user: %s", ue.Email)
 	}
 	resUser := entity.User{
@@ -54,12 +55,12 @@ func (uu *userUsecase) Signup(ue entity.User) (entity.User, error) {
 }
 
 func (uu *userUsecase) Login(ue entity.User) (string, error) {
-	storedUser := entity.User{}
-	if err := uu.ur.GetUserByEmail(&storedUser, ue.Email); err != nil {
+	storedUser, err := uu.ur.GetUserByEmail(context.Background(), ue.Email)
+	if err != nil {
 		return "", fmt.Errorf("user not found: %s", ue.Email)
 	}
-	err := bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(ue.Password))
-	if err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(storedUser.Password),
+		[]byte(ue.Password)); err != nil {
 		return "", err
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
