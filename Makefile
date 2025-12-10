@@ -18,6 +18,10 @@ generate-oapi:
 	go generate ./internal/controller/rest/v1
 .PHONY: generate-oapi
 
+generate-mock:
+	go generate ./internal/usecase
+.PHONY: mock
+
 generate-ent:
 	go generate ./pkg/ent
 .PHONY: generate-ent
