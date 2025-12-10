@@ -13,6 +13,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+//go:generate go tool mockgen -source=$GOFILE -destination=../../mock/usecase/mock/mock_$GOFILE -package=usecasemock
+
 var ErrUserAlreadyExists = errors.New("user already exists")
 
 type IUserUsecase interface {

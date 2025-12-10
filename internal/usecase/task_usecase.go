@@ -7,6 +7,8 @@ import (
 	"rest-api-codegen/internal/repository"
 )
 
+//go:generate go tool mockgen -source=$GOFILE -destination=../../mock/usecase/mock/mock_$GOFILE -package=usecasemock
+
 var ErrTaskAlreadyExists = errors.New("task already exists")
 
 type ITaskUsecase interface {
