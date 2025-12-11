@@ -20,10 +20,10 @@ type ITaskUsecase interface {
 }
 
 type taskUsecase struct {
-	tr repository.ITaskRepository
+	tr repository.TaskRepository
 }
 
-func NewTaskUsecase(tr repository.ITaskRepository) ITaskUsecase {
+func NewTaskUsecase(tr repository.TaskRepository) ITaskUsecase {
 	return &taskUsecase{tr: tr}
 }
 

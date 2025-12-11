@@ -13,7 +13,7 @@ type userRepository struct {
 	client *ent.Client
 }
 
-func NewUserRepository(client *ent.Client) repository.IUserRepository {
+func NewUserRepository(client *ent.Client) repository.UserRepository {
 	return &userRepository{
 		client: client,
 	}

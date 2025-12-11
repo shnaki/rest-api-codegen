@@ -82,7 +82,7 @@ func (tr *taskRepository) DeleteTask(ctx context.Context, userID uint64, taskID 
 		Exec(ctx)
 }
 
-func NewTaskRepository(client *ent.Client) repository.ITaskRepository {
+func NewTaskRepository(client *ent.Client) repository.TaskRepository {
 	return &taskRepository{
 		client: client,
 	}

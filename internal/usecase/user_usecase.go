@@ -23,10 +23,10 @@ type IUserUsecase interface {
 }
 
 type userUsecase struct {
-	ur repository.IUserRepository
+	ur repository.UserRepository
 }
 
-func NewUserUsecase(ur repository.IUserRepository) IUserUsecase {
+func NewUserUsecase(ur repository.UserRepository) IUserUsecase {
 	return &userUsecase{ur: ur}
 }
 

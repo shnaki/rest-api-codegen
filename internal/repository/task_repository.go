@@ -5,9 +5,9 @@ import (
 	"rest-api-codegen/internal/entity"
 )
 
-//go:generate go tool mockgen -source=$GOFILE -destination=../../mock/repository/mock/mock_$GOFILE -package=repositorymock
+//go:generate go tool mockgen -source=$GOFILE -destination=../../mock/repository/mock/mock_task_repository.go -package=repositorymock
 
-type ITaskRepository interface {
+type TaskRepository interface {
 	GetAllTasks(ctx context.Context, userID uint64) ([]*entity.Task, error)
 	GetTaskByID(ctx context.Context, userID uint64, taskID uint64) (*entity.Task, error)
 	CreateTask(ctx context.Context, te *entity.Task) error
