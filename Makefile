@@ -20,6 +20,7 @@ generate-oapi:
 
 generate-mock:
 	go generate ./internal/usecase
+	go generate ./internal/repository
 .PHONY: mock
 
 generate-ent:

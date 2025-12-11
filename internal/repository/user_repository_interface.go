@@ -5,6 +5,8 @@ import (
 	"rest-api-codegen/internal/entity"
 )
 
+//go:generate go tool mockgen -source=$GOFILE -destination=../../mock/repository/mock/mock_$GOFILE -package=repositorymock
+
 type IUserRepository interface {
 	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
 	CreateUser(ctx context.Context, ue *entity.User) error
