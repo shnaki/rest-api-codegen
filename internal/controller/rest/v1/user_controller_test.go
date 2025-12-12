@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"errors"
 	"strings"
 	"testing"
@@ -24,7 +25,7 @@ func TestUserController_Login_Success(t *testing.T) {
 
 	t.Setenv("API_DOMAIN", "example.com")
 
-	resp, err := uc.Login(nil, req)
+	resp, err := uc.Login(context.Background(), req)
 	if err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
@@ -47,7 +48,7 @@ func TestUserController_Login_Error(t *testing.T) {
 	req := LoginRequestObject{Body: &body}
 	uu.EXPECT().Login(entity.User{Email: body.Email, Password: body.Password}).Return("", errors.New("boom"))
 
-	resp, err := uc.Login(nil, req)
+	resp, err := uc.Login(context.Background(), req)
 	if err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
@@ -66,7 +67,7 @@ func TestUserController_SignUp_Conflict(t *testing.T) {
 	req := SignUpRequestObject{Body: &body}
 	uu.EXPECT().Signup(entity.User{Email: body.Email, Password: body.Password}).Return(entity.User{}, usecase.ErrUserAlreadyExists)
 
-	resp, err := uc.SignUp(nil, req)
+	resp, err := uc.SignUp(context.Background(), req)
 	if err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
@@ -85,7 +86,7 @@ func TestUserController_SignUp_Error(t *testing.T) {
 	req := SignUpRequestObject{Body: &body}
 	uu.EXPECT().Signup(entity.User{Email: body.Email, Password: body.Password}).Return(entity.User{}, errors.New("db"))
 
-	resp, err := uc.SignUp(nil, req)
+	resp, err := uc.SignUp(context.Background(), req)
 	if err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}
@@ -101,7 +102,7 @@ func TestUserController_Logout(t *testing.T) {
 	uc := NewUserController(uu)
 
 	t.Setenv("API_DOMAIN", "example.com")
-	resp, err := uc.Logout(nil, LogoutRequestObject{})
+	resp, err := uc.Logout(context.Background(), LogoutRequestObject{})
 	if err != nil {
 		t.Fatalf("unexpected err: %v", err)
 	}

@@ -10,6 +10,7 @@ import (
 func main() {
 	client := db.NewClient()
 	defer fmt.Println("Successfully migrated")
+	// nolint: errcheck
 	defer client.Close()
 
 	// 自動マイグレーションを実行する。
